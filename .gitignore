@@ -5,3 +5,7 @@ yamasemi_ws/log/
 *.pyc
 __pycache__/
 .claude/
+
+# パラメータファイル
+*.param
+*.param.yaml

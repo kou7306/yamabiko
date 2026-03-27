@@ -126,7 +126,50 @@ sudo chmod 777 /dev/ttyACM1  # URG
 
 **注意**: USB を抜き差しすると番号が変わるため、その都度確認すること。
 
-### 6. リポジトリのクローンとビルド
+### 6. パラメータファイルの準備
+
+ロボットの制御パラメータファイルはリポジトリに含まれていません。`yamasemi_ws/src/beego_driver/config/` に以下の 2 ファイルを手動で作成してください。
+
+#### `beego.param`
+
+ypspur-coordinator が読み込むロボット物理パラメータです。以下の項目を設定します：
+
+| カテゴリ | 主なパラメータ | 説明 |
+|---------|-------------|------|
+| 電源 | `VOLT` | バッテリ電圧 [V] |
+| 制御周期 | `CYCLE`, `CONTROL_CYCLE` | PID 制御・軌道制御の周期 [s] |
+| 車体 | `RADIUS[0]`, `RADIUS[1]`, `TREAD` | 左右ホイール半径 [m]、トレッド幅 [m] |
+| 慣性 | `MASS`, `TIRE_M_INERTIA`, `MOMENT_INERTIA` | 車体質量 [kg]、タイヤ・車体慣性モーメント |
+| モーター | `COUNT_REV`, `GEAR`, `MOTOR_R`, `MOTOR_VC`, `MOTOR_TC` | エンコーダ分解能、ギア比、巻線抵抗など |
+| PID ゲイン | `GAIN_KP`, `GAIN_KI`, `INTEGRAL_MAX` | 速度制御の P/I ゲインと積分上限 |
+| 速度制限 | `MAX_VEL`, `MAX_W`, `MAX_ACC_V`, `MAX_ACC_W` | 最大並進速度・角速度・加速度 |
+| 軌道追従 | `L_C1`, `L_K1`〜`L_K3`, `L_DIST` | 経路追従制御のパラメータ |
+
+フォーマットは YP-Spur 標準の `.param` 形式（スペース区切りの `KEY VALUE` 行）です。
+サンプルは [YP-Spur リポジトリ](https://github.com/openspur/yp-spur) を参照してください。
+
+#### `driver_node.param.yaml`
+
+beego_driver ROS 2 ノードのパラメータです。以下の項目を設定します：
+
+```yaml
+/**:
+  ros__parameters:
+    odom_frame_id: "odom"            # オドメトリフレーム名
+    base_frame_id: "base_footprint"  # ベースフレーム名
+    left_wheel_joint: "left_wheel_joint"
+    right_wheel_joint: "right_wheel_joint"
+    Hz: 40                           # 発行周波数
+    liner_vel_lim: 0.5               # 並進速度リミット [m/s]
+    liner_accel_lim: 1.0             # 並進加速度リミット [m/ss]
+    angular_vel_lim: 3.14            # 角速度リミット [rad/s]
+    angular_accel_lim: 6.28          # 角加速度リミット [rad/ss]
+    calculate_odom_from_ypspur: true # YP-Spur からオドメトリ計算
+    publish_odom_tf: true            # odom→base TF を配信
+    debug_mode: false
+```
+
+### 7. リポジトリのクローンとビルド
 
 ```bash
 git clone https://github.com/kou7306/yamabiko.git
