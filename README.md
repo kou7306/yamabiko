@@ -137,7 +137,7 @@ yamasemi_ws/src/<ドライバパッケージ>/config/<ROBOT>.param
 例：
 
 ```
-yamasemi_ws/src/beego_driver/config/beego.param
+yamasemi_ws/src/yamabiko_driver/config/beego.param
 ```
 
 ### 7. リポジトリのクローンとビルド
